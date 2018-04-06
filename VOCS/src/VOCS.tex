@@ -1,0 +1,194 @@
+% Copyright 2016 - 2017 Bas van Meerten and Wouter Franssen
+%
+%This file is part of ssNake.
+%
+%ssNake is free software: you can redistribute it and/or modify
+%it under the terms of the GNU General Public License as published by
+%the Free Software Foundation, either version 3 of the License, or
+%(at your option) any later version.
+%
+%ssNake is distributed in the hope that it will be useful,
+%but WITHOUT ANY WARRANTY; without even the implied warranty of
+%MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%GNU General Public License for more details.
+%
+%You should have received a copy of the GNU General Public License
+%along with ssNake. If not, see <http://www.gnu.org/licenses/>.
+
+\documentclass[11pt,a4paper]{article}
+\include{DeStijl}
+
+\usepackage[bitstream-charter]{mathdesign}
+\usepackage[T1]{fontenc}
+\usepackage[protrusion=true,expansion,tracking=true]{microtype}
+\pgfplotsset{compat=1.7,/pgf/number format/1000 sep={}, axis lines*=left,axis line style={gray},every outer x axis line/.append style={-stealth'},every outer y axis line/.append style={-stealth'},tick label style={font=\small},label style={font=\small},legend style={font=\footnotesize}}
+\usepackage{colortbl}
+\usetikzlibrary{calc}
+
+%Set section font
+\usepackage{sectsty}
+\allsectionsfont{\color{black!70}\fontfamily{SourceSansPro-LF}\selectfont}
+%--------------------
+
+
+%Set toc fonts
+\usepackage{tocloft}
+%\renewcommand\cftchapfont{\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cfttoctitlefont{\color{black!70}\Huge\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cftsecfont{\fontfamily{SourceSansPro-LF}\selectfont}
+%\renewcommand\cftchappagefont{\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cftsecpagefont{\fontfamily{SourceSansPro-LF}\selectfont}
+\renewcommand\cftsubsecfont{\fontfamily{SourceSansPro-LF}\selectfont}
+\renewcommand\cftsubsecpagefont{\fontfamily{SourceSansPro-LF}\selectfont}
+%--------------------
+
+%Define header/foot
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead[LE,RO]{\fontfamily{SourceSansPro-LF}\selectfont \thepage}
+\fancyhead[LO,RE]{\fontfamily{SourceSansPro-LF}\selectfont \leftmark}
+\fancyfoot[C]{}
+%--------------------
+
+%remove page number from first chapter page
+\makeatletter
+\let\ps@plain\ps@empty
+\makeatother
+%----------------------
+\usepackage{blindtext, color}
+\definecolor{gray75}{gray}{0.75}
+\newcommand{\hsp}{\hspace{20pt}}
+
+
+
+\usepackage[hidelinks,colorlinks,allcolors=black, pdftitle={VOCS},pdfauthor={W.M.J.\ Franssen}]{hyperref}
+
+\interfootnotelinepenalty=10000 %prevents splitting of footnote over multiple pages
+\linespread{1.2}
+
+%\usepgfplotslibrary{external}%creates all external tikz images that are included.
+%\tikzexternalize[shell escape=-enable-write18]%activate externalization
+%\tikzsetexternalprefix{GeneratedFigures/}
+%\tikzset{external/force remake} %Enable forced remake
+
+\title{\color{black}\fontfamily{SourceSansPro-LF}\bfseries Variable Offset Cumulative Spectra (VOCS)
+analysis in ssNake}
+\author{}
+\date{\color{black}\fontfamily{SourceSansPro-LF}\bfseries \today}
+
+
+\begin{document}
+%\newgeometry{left=72pt,right=72pt,top=95pt,bottom=95pt,footnotesep=0.5cm}
+\microtypesetup{protrusion=true} % enables protrusion
+
+\maketitle
+
+\section{Introduction}
+The following will explain how a VOCS (Variable Offset Cumulative Spectra) experiment can be processed in ssNake. The
+tutorial delivered with the ssNake program is considered as prior knowledge. If you have not yet
+studied this, please do so before continuing with this example.
+
+When encountering very broad signals in solid state NMR, issues arise with proper excitation and
+measuring. As the broad signal decays very fast in the time domain (FID), an echo is required to
+properly measure it. The width of the spectrum that can be covered by these echo pulse is however
+limited by the RF power. In cases with really broad signals, a regular probe cannot reach an RF
+power high enough to excite the whole spectrum in one go.
+
+To counter this problem, the VOCS experiment has been developed. The idea is simple: echo spectra
+are recorded for several different offsets (carrier frequencies)  and added afterwards. While each
+experiment only excites a small part, the whole spectrum can be reconstructed as long as we have
+several echo spectra with offset values across the broad line. Processing the data can be
+cumbersome, but is in principal easy.
+
+\section{Used data}
+For this example, we will use a set of $^{127}$I spectra of methylammonium iodide (MAI) recorded at 20~T.
+21 echos were recorded with 100 kHz steps in the offset (carrier frequency). The spectrum is very
+broad due to the strong quadrupolar coupling. The lineshape is only of the central transition, and
+is dominated by the second order quadrupolar coupling.
+
+In the data directory, 21 different spectra are saved as MATLAB files (saved with ssNake). The 'Raw'
+folder contains the measured FID from the Varian spectrometer. The `FinalSpectrum' folder contains
+the final spectrum of this tutorial.
+
+\section{Processing}
+In the data directory, 21 different spectra are saved as MATLAB files. The saved spectra contain the
+processed echo spectra. These have been made using whole echo processing (see our other tutorial).
+The center frequencies has been put right (necessary because I recorded the data as an array,
+instead of the better option to take spectra 1D spectra), and the data have been cut to only show
+the relevant area (we do not want to add all the noise to the left and right of every echo).
+
+\begin{itemize}
+\item Open the data in ssNake by dragging and dropping all of them in ssNake (or via File
+  $\longrightarrow$ Open).
+\end{itemize}
+This gives us all the separate echoes in different workspaces. To preview the data, lets view them
+together in a Multiplot. When in '-100', use Plot $\longrightarrow$ Multiplot to go to the multiplot
+window. Use the `Add spectrum' button in the side frame to add some other echos, and reset the
+spectrum view by double right click in the spectrum. I added -1000, -700, -400, 200 and 600 to get
+this view:
+
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig1.png}
+\end{center}
+
+We can already see a hint of the spectrum the we want to get (spoiler alert: it has $\eta=0$).
+
+The actual tricky part is the adding of the data: each echo has its own $x$-axis, and we can not
+just add the data. We first must force all the spectra to use the same $x$-axis. This is called
+`regridding'. In a regridding procedure, a new $x$-axis is constructed. Then, for each $x$-value, a
+$y$-value needs to be determined. This can be done by interpolation using the $y$-values that are in
+the measured spectrum. This results in a new data set with the new axis $x$ and the approximated
+$y$-values. All the new $x$-values that are outside the range of the old axis get $y$-values of 0
+attached to them (no \textit{extra}polation is performed).
+
+We need to apply the same regridding on all of our 21 spectra. Based on the figure above, a range of
+$-500$ to 1500 kHz seems appropriate. We also have to chose a number of points. It is good to make
+this around the same density (number of points per kHz) as our single echoes. This appear to be 1.6
+per kHz, so lets make it 2 and go for 4k points (4096 points). 
+
+
+\begin{itemize}
+\item Go to workspace `-100' 
+ \item Execute Matrix $\longrightarrow$ Regrid (min: -500, max: 1500, points 4096).
+\end{itemize}
+
+This gives to following Figure:
+
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig2.png}
+\end{center}
+We now have to do this for all the workspaces. This is most easily done by using a macro. Go to
+workspace `-200' and go to Menu Macros $\longrightarrow$ Start recording and push OK for the name.
+Then do the same regridding as before (min: -500, max: 1500, points 4096). The go to Macros
+$\longrightarrow$ Stop recording. The macro can now be used via Macros $\longrightarrow$ Run
+$\longrightarrow$ MacroName. Run the macro over all the other workspaces to do the regridding for
+all 21 spectra.
+
+As a final step, we have to add all the spectra. This can be most conveniently done by merging the
+data to a 2D data set. Use Combine $\longrightarrow$ Combine Workspaces and select all entries on
+the left (use ctrl + a), and drag them to the right. Push OK, and give it a nice name. This creates
+a 2D data set, with the different spectra along D1. To view this, use Plot $\longrightarrow$ Stack
+plot, and set the `Spacing' to zero (in the side frame). This gives:
+
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig3.png}
+\end{center}
+
+Which shows all the different spectra overlaid. As a final step, we need to sum the data over D1:
+\begin{itemize}
+\item Go to a 1D plot (Plot $\longrightarrow$ 1D Plot)
+\item Change the active dimension to D1 (click on the radio button under `D1' in the side frame)
+\item Use Matrix $\longrightarrow$ Region $\longrightarrow$ Sum (with no input parameters, just push
+  Ok)
+\end{itemize}
+This should give:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig4.png}
+\end{center}
+Which is the final spectrum. A beautiful $\eta = 0$ second order quadrupolar pattern. It does not
+exactly conform to simulations, as the probe tuning was not changed during the experiment. This
+lowers the intensity far away from the centre. Also, the `step' in the centre is not at the right
+position. This is probably due to some chemical shift anisotropy (CSA).
+
+
+\end{document}

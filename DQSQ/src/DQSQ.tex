@@ -1,0 +1,219 @@
+% Copyright 2016 - 2017 Bas van Meerten and Wouter Franssen
+%
+%This file is part of ssNake.
+%
+%ssNake is free software: you can redistribute it and/or modify
+%it under the terms of the GNU General Public License as published by
+%the Free Software Foundation, either version 3 of the License, or
+%(at your option) any later version.
+%
+%ssNake is distributed in the hope that it will be useful,
+%but WITHOUT ANY WARRANTY; without even the implied warranty of
+%MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%GNU General Public License for more details.
+%
+%You should have received a copy of the GNU General Public License
+%along with ssNake. If not, see <http://www.gnu.org/licenses/>.
+
+\documentclass[11pt,a4paper]{article}
+\include{DeStijl}
+
+\usepackage[bitstream-charter]{mathdesign}
+\usepackage[T1]{fontenc}
+\usepackage[protrusion=true,expansion,tracking=true]{microtype}
+\pgfplotsset{compat=1.7,/pgf/number format/1000 sep={}, axis lines*=left,axis line style={gray},every outer x axis line/.append style={-stealth'},every outer y axis line/.append style={-stealth'},tick label style={font=\small},label style={font=\small},legend style={font=\footnotesize}}
+\usepackage{colortbl}
+\usetikzlibrary{calc}
+
+%Set section font
+\usepackage{sectsty}
+\allsectionsfont{\color{black!70}\fontfamily{SourceSansPro-LF}\selectfont}
+%--------------------
+
+
+%Set toc fonts
+\usepackage{tocloft}
+%\renewcommand\cftchapfont{\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cfttoctitlefont{\color{black!70}\Huge\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cftsecfont{\fontfamily{SourceSansPro-LF}\selectfont}
+%\renewcommand\cftchappagefont{\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cftsecpagefont{\fontfamily{SourceSansPro-LF}\selectfont}
+\renewcommand\cftsubsecfont{\fontfamily{SourceSansPro-LF}\selectfont}
+\renewcommand\cftsubsecpagefont{\fontfamily{SourceSansPro-LF}\selectfont}
+%--------------------
+
+%Define header/foot
+%\usepackage{fancyhdr}
+%\pagestyle{fancy}
+%\fancyhead[LE,RO]{\fontfamily{SourceSansPro-LF}\selectfont \thepage}
+%\fancyhead[LO,RE]{\fontfamily{SourceSansPro-LF}\selectfont \leftmark}
+%\fancyfoot[C]{}
+%--------------------
+
+%remove page number from first chapter page
+%\makeatletter
+%\let\ps@plain\ps@empty
+%\makeatother
+%----------------------
+
+\usepackage[hidelinks,colorlinks,allcolors=black, pdftitle={DQSQ},pdfauthor={Wouter M.J.\ Franssen}]{hyperref}
+
+\interfootnotelinepenalty=10000 %prevents splitting of footnote over multiple pages
+\linespread{1.2}
+
+\title{\color{black}\fontfamily{SourceSansPro-LF}\bfseries 2D double-quantum/single-quantum (SQ/DQ)
+correlation spectroscopy analysis in ssNake}
+\author{}
+\date{\color{black}\fontfamily{SourceSansPro-LF}\bfseries \today}
+
+
+\begin{document}
+%\newgeometry{left=72pt,right=72pt,top=95pt,bottom=95pt,footnotesep=0.5cm}
+\microtypesetup{protrusion=true} % enables protrusion
+
+\maketitle
+
+\section{Introduction}
+The following will explain how 2D double-quantum single-quantum NMR data can be processed in ssNake.
+ The
+tutorial delivered with the ssNake program is considered as prior knowledge. If you have not yet
+studied this, please do so before continuing with this example.
+
+In liquid state NMR, homonuclear correlations (e.g.\ $^{1}$H-$^1$H) are commonly recorded using a
+COSY experiment. This experiment uses the scalar couplings (J-couplings) between the different nuclei
+to transfer magnetization between them, and to gain information into the connectivity between the
+spins. Another way to do this, is to use dipolar couplings, and go for a NOESY experiment. In solid
+state systems, scaler couplings are often to weak for COSY experiments (as the relaxation times are
+much shorter), and other experiments need to be considered. A common 2D homonuclear solid state
+experiment is a double-quantum single-quantum experiment. In this experiment, the direct dimension
+is the single-quantum dimension, and the indirect dimension the double quantum. 
+
+If two spins A and B are connected (via a dipolar coupling), they will show crosspeaks in the DQSQ
+experiment. In the DQ dimension, A and B can have a peak at their double frequency (because
+of the double quantum character). If there is a sizable dipolar coupling between A and B, there will
+also be crosspeaks at the sum shift $\delta_\text{A} + \delta_\text{B}$. The intensity of
+these peaks compared to the main (diagonal) peaks gives information on the strength of the dipolar
+coupling.
+
+\section{Data}
+The data we will use in this tutorial is from a $^1$H--$^1$H DQSQ experiment on methylammonium lead iodide
+(CH$_3$NH$_3$PbI$_3$), a perovskite material used in a new generation of solar cells. The spectrum
+was recorded on a Varian 400 MHz machine, using a 3.2 mm rotor and 15 kHz MAS.
+
+
+
+\section{Processing}
+Processing a DQSQ experiment is mostly just regular 2D data processing. Only at the stage of
+referencing do things get a bit tricky.
+
+\begin{itemize}
+  \item Open the data delivered with this tutorial in ssNake via Open $\longrightarrow$ File
+	\item Zero fill the data to 4096 points (Matrix $\longrightarrow$ Sizing, and fill in 4096 at the
+	  size and leave the offset as is)
+	\item Push the `Fourier' button to go to the spectrum
+	\item Phase the spectrum using only zero order phasing
+\end{itemize}
+This should give something like this:
+\begin{center}
+\includegraphics[width=0.7\linewidth]{Figs/Fig1.png}
+\end{center}
+And zoomed on the main peaks:
+\begin{center}
+\includegraphics[width=0.7\linewidth]{Figs/Fig2.png}
+\end{center}
+This shows the first trace of our 2D data. We have now processed the direct dimension (D2), we now
+continue with the indirect dimension (D1).
+
+\begin{itemize}
+  \item Get the position of the rightmost main peak (so that we can view it along D1). Use `Get
+	 Position' from the bottom frame, and click on the peak. This give x-Position = 2030 (or
+	 something close to that).
+  \item Fill in this value at the D2 box in the side frame and press `Enter'
+\end{itemize}
+This should give:
+\begin{center}
+\includegraphics[width=0.7\linewidth]{Figs/Fig3.png}
+\end{center}
+This data was recorded with a hypercomplex scheme (states--TPPI), and requires a conversion:
+
+\begin{itemize}
+  \item Use Tools $\longrightarrow$ Hypercomplex $\longrightarrow$ States--TPPI to convert it
+	\item Use Tools $\longrightarrow$ Complex conjugate to invert the sense of direction to the
+	  ssNake definition \footnote{Most Varian sequences define the sense of the rotation in the
+	  indirect dimension in the opposite way as we do it. This is, however, dependent on the way the
+	used pulse-sequence is written, so we cannot correct this for you automatically. Without this
+ step, the spectrum along D1 will appear flipped. }
+\end{itemize}
+This should give:
+\begin{center}
+\includegraphics[width=0.7\linewidth]{Figs/Fig4.png}
+\end{center}
+
+\begin{itemize}
+  \item Zero fill to 512 points
+  \item Fourier transform
+  \item Phase (0 order only)
+\end{itemize}
+This gives:
+\begin{center}
+\includegraphics[width=0.7\linewidth]{Figs/Fig5.png}
+\end{center}
+
+We now need to set the correct chemical shift reference for both dimensions. The reference frequency
+(0 ppm) is  399.9344480 MHz (based on an external reference). We can immediately apply this to the
+direct dimension (D2):
+
+
+\begin{itemize}
+  \item Go to D2 (use the radio button in the side frame)
+  \item Use Plot $\longrightarrow$ Reference $\longrightarrow$ Set Reference, and fill in
+	 399.9344480 for the frequency (and leave the other values unchanged).
+	\item Set the current view to `ppm' (in the bottom frame with `Axis')
+\end{itemize}
+This gives:
+
+\begin{center}
+\includegraphics[width=0.7\linewidth]{Figs/Fig6.png}
+\end{center}
+
+Now we continue with D1. The tricky part with referencing a double-quantum dimension is that our
+external reference is not correct anymore: all frequencies are doubled in the indirect dimension.
+This means that our zero ppm frequency (399.9344480 MHz) is different in D1: its difference with
+respect to the carrier frequency should be doubled. In our case, the carrier frequency (centre of
+the spectrum) is 399.936414 MHz (see the bottom frame). The difference with this and the reference
+frequency is -0.0019659 MHz. This value should be added to the reference frequency (this makes the
+new reference frequency to be twice as far away from the centre frequency as before). This makes to
+reference frequency in D1 equal to  $399.9344480 -0.0019659 = 399.9324820$ MHz.
+
+\begin{itemize}
+  \item Go to D1 (use the radio button in the side frame)
+  \item Use Plot $\longrightarrow$ Reference $\longrightarrow$ Set Reference, and fill in
+399.9324820 MHz
+	 	\item Set the current view to `ppm' (in the bottom frame with `Axis')
+	\item Go back to D2 (radio button)
+\end{itemize}
+Now, we are finished with the processing, and it is time to view our 2D spectrum. Use Plot
+$\longrightarrow$ Contour to make a contour plot. Zoomed in, this looks like (with the lower contour
+level at 55 \%, see the side frame, contour levels can be zoomed with `shift + scroll') :
+
+\begin{center}
+\includegraphics[width=0.7\linewidth]{Figs/Fig7.png}
+\end{center}
+This shows that the two peaks are connected. Both have an average peak in D1 at $\approx 10$ ppm, as
+well as self peaks at twice there original chemical shift. These self peaks are located on the
+diagonal, which ssNake can also draw. In the side frame enable the `Diagonal' and set the
+multiplier at 2 (we want the diagonal to go twice as fast in D1, due to the double-quantum
+character). This gives:
+
+\begin{center}
+\includegraphics[width=0.7\linewidth]{Figs/Fig8.png}
+\end{center}
+Which is the final spectrum. The pattern that is shown here is common for a DQSQ experiment, if the
+two chemical species are connected via a dipolar coupling. The final spectrum is also delivered with
+this tutorial (as a .mat file). Note that in the D2 dimension the width has been reduced to the
+relevant part via Matrix $\longrightarrow$ Extract Part. This was done to reduced the saved data
+size.
+
+
+
+\end{document}

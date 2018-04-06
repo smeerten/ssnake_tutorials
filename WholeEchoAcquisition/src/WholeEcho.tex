@@ -1,0 +1,152 @@
+% Copyright 2016 - 2017 Bas van Meerten and Wouter Franssen
+%
+%This file is part of ssNake.
+%
+%ssNake is free software: you can redistribute it and/or modify
+%it under the terms of the GNU General Public License as published by
+%the Free Software Foundation, either version 3 of the License, or
+%(at your option) any later version.
+%
+%ssNake is distributed in the hope that it will be useful,
+%but WITHOUT ANY WARRANTY; without even the implied warranty of
+%MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%GNU General Public License for more details.
+%
+%You should have received a copy of the GNU General Public License
+%along with ssNake. If not, see <http://www.gnu.org/licenses/>.
+
+\documentclass[11pt,a4paper]{article}
+\include{DeStijl}
+
+\usepackage[bitstream-charter]{mathdesign}
+\usepackage[T1]{fontenc}
+\usepackage[protrusion=true,expansion,tracking=true]{microtype}
+\pgfplotsset{compat=1.7,/pgf/number format/1000 sep={}, axis lines*=left,axis line style={gray},every outer x axis line/.append style={-stealth'},every outer y axis line/.append style={-stealth'},tick label style={font=\small},label style={font=\small},legend style={font=\footnotesize}}
+\usepackage{colortbl}
+\usetikzlibrary{calc}
+
+%Set section font
+\usepackage{sectsty}
+\allsectionsfont{\color{black!70}\fontfamily{SourceSansPro-LF}\selectfont}
+%--------------------
+
+
+%Set toc fonts
+\usepackage{tocloft}
+%\renewcommand\cftchapfont{\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cfttoctitlefont{\color{black!70}\Huge\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cftsecfont{\fontfamily{SourceSansPro-LF}\selectfont}
+%\renewcommand\cftchappagefont{\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cftsecpagefont{\fontfamily{SourceSansPro-LF}\selectfont}
+\renewcommand\cftsubsecfont{\fontfamily{SourceSansPro-LF}\selectfont}
+\renewcommand\cftsubsecpagefont{\fontfamily{SourceSansPro-LF}\selectfont}
+%--------------------
+
+%Define header/foot
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead[LE,RO]{\fontfamily{SourceSansPro-LF}\selectfont \thepage}
+\fancyhead[LO,RE]{\fontfamily{SourceSansPro-LF}\selectfont \leftmark}
+\fancyfoot[C]{}
+%--------------------
+
+%remove page number from first chapter page
+\makeatletter
+\let\ps@plain\ps@empty
+\makeatother
+%----------------------
+\usepackage{blindtext, color}
+\definecolor{gray75}{gray}{0.75}
+\newcommand{\hsp}{\hspace{20pt}}
+
+
+
+\usepackage[hidelinks,colorlinks,allcolors=black, pdftitle={Whole echo acquisition},pdfauthor={W.M.J.\ Franssen}]{hyperref}
+
+\interfootnotelinepenalty=10000 %prevents splitting of footnote over multiple pages
+\linespread{1.2}
+
+%\usepgfplotslibrary{external}%creates all external tikz images that are included.
+%\tikzexternalize[shell escape=-enable-write18]%activate externalization
+%\tikzsetexternalprefix{GeneratedFigures/}
+%\tikzset{external/force remake} %Enable forced remake
+
+\title{\color{black}\fontfamily{SourceSansPro-LF}\bfseries Whole echo acquisition data processing using ssNake}
+\date{\color{black}\fontfamily{SourceSansPro-LF}\bfseries \today}
+
+
+\begin{document}
+\input{PulseSeq.tex}
+%\newgeometry{left=72pt,right=72pt,top=95pt,bottom=95pt,footnotesep=0.5cm}
+\microtypesetup{protrusion=true} % enables protrusion
+
+\maketitle
+
+\section{Introduction}
+In the following, we will explain how to processed a whole echo acquired data set. The tutorial delivered with the ssNake program is considered as prior knowledge. If you have not yet studied this, please do so before continuing with this example.
+
+Whole echo acquisition is a nice trick to make powder patterns easier (and thus more accurate) to phase. NMR signals from powders have the tendency to decay quite rapidly due to destructive interference. Using an echo, the start of the signal can be `delayed ' in such a way that it does not fall in the dead time of the probe, and allows for a proper recording of the signal. Whole echo acquisition means that the recording of the signal is started well before the echo top, in such a way that both the rising and decay of the echo is measured. When processed correctly, the imaginary part of the spectrum goes to zero, and phasing is straightforward.
+
+\section{Used data}
+For this example, we will use a Varian data set recorded at 14.1~T. The sample was a fine powder of lanthanum fluoride (LaF$_3$), and the $^{139}$La signal is being measured. The setting were such that the echo top is in the centre of the acquisition period.
+
+\section{Processing}
+\begin{itemize}
+\item Open the data file by using File $\longrightarrow$ Open (or drag and drop).
+\item Put the display on absolute (Abs) via the bottom frame under `Plot:'
+\end{itemize}
+Setting the view on absolute allows easy identification of the echo top. Now we need to swap the echo and put one part at the start, and one part at the end of the signal. As the signal is symmetric around the echo maximum, this will force the imaginary part of the spectrum to zero.
+\begin{itemize}
+\item Swap the echo via `Tools $\longrightarrow$ Swap Echo' and left-click on the echo top to set the index (about 468), and press OK. 
+\end{itemize}
+This will show the following:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig1.png}
+\end{center}
+
+Note that the `Whole Echo' check box in the bottom frame is now activated. This makes sure that zerofilling is now done at the centre in stead of at the end of the signal. Also, apodizing is done in a symmetric way.
+\begin{itemize}
+\item Zerofill to `4k' points via `Matrix $\longrightarrow$ Sizing' 
+\item Apodize using 1500 Hz Lorentzian broadening (`Tools  $\longrightarrow$ Apodize')
+\end{itemize}
+This should show the following:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig2.png}
+\end{center}
+
+\begin{itemize}
+\item Fourier transform via the `Fourier' button
+\item Put the display at `Both' via the bottom frame, to show the real and imaginary part of the spectrum
+\end{itemize}
+This shows (zoomed in):
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig3.png}
+\end{center}
+
+To get the desired spectrum, we now need to phase it to make the imaginary part zero, and the real part positive:
+\begin{itemize}
+\item Phase with -152$^\circ$ zero order order phasing (`Tools $\longrightarrow$ Phasing')
+\end{itemize}
+This gives the final spectrum:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig4.png}
+\end{center}
+
+Optionally, you can now fit this 2nd order quadrupolar lineshape via `Fitting $\longrightarrow$ Second Order Quadrupolar Static'. This will lead to C$_\text{Q}$ = 15.6 MHz, and $\etaup = 0.78$. Do remember that $^{139}$La has a spin quantum number of 7/2.
+
+\section{Alternatives}
+\subsection{Wrong echo top}
+In some cases, the echo top of the data is hard to establish. When the echo is split at the wrong part, a first order phasing is introduced in the spectrum, and zero order phasing only will still lead to some imaginary component. If the echo is swapped at index 461, the following zero order phased (-154.7$^\circ$) spectrum is found:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig5.png}
+\end{center}
+
+This can be fixed using a first order phasing. After first order phasing (2332$^\circ$ at reference -20317) the properly phased spectrum is recovered:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig6.png}
+\end{center}
+
+
+
+
+\end{document}

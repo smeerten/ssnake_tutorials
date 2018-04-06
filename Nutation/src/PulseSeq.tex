@@ -1,0 +1,178 @@
+
+
+\def\nucleuswidth{2cm} %Distance from nucleus label to start
+\def\exwidth{0.6cm} %width of 90 deg pulse
+\def\exheight{2cm} %heigth of 90 deg pulse
+\def\inwidth{1cm} %width of 180 pulse
+\def\inheigth{1.5cm} %heigth of 180 pulse
+\def\tauwidth{3cm} %width of standard delay
+\def\arrowsep{0.1cm} %space between the start of an arrow and the actual border
+\def\arrowheigth{0.7cm} %height of arrow above baseline
+\def\fidlength{2.5} %This variable must be without unit! It is used in the domain part of the echo and fid. Must be the same as \fidlengthCM, which is used in the arrows (for which a unit must be specified)
+\def\fidlengthCM{2.5cm} %length of the FID
+\def\fidarrowheight{-2cm} %heigth of the errow for the FID label
+\def\fidheigth{2 cm} %defines the heigth of the FID and echo
+\def\repeatheight{2.5cm} %heigth of the repeatblock
+\def\repeatwidth{0.3cm} %width of the repeatblock bracket i.e. [
+\def\repeatdepth{2.2cm}
+\def\freq{30} %defines the frequency of the FID and echo, 
+\def\t2{0.3} %defines the exponential decay of the fid and echo
+
+
+
+%ExPulse-----------------------------
+%Call with \ExPulse[Label][ArrowLabel]{Arrowheight}
+%The arguments in brackets are optional. Use:
+%\ExPulse{}  for only pulse
+%\ExPulse[$\phi$]{}  for pulse with phase label
+%\ExPulse[][$t_1$]{\arrowheight}  for pulse with arrow and label (make label ' ' for arrow without label)
+%\ExPulse[$\phi$][$t_1$]{\arrowheight}  for pulse with arrow, label and phase.
+\newcommand{\ExPulse}[1][]{%
+  \def\Label{#1}%
+  \draw [fill=gray] (Position) rectangle ++(\exwidth,\exheight); %draw the rectangle
+  \ExPulseNext
+}
+\newcommand{\ExPulseNext}[2][]{%
+\ifx&\Label&%
+      %do nothing
+\else
+     \draw (Position) ++ ($(\exwidth/2,\exheight)$) ++ (0,2ex) node [anchor=base] {\Label};%node above the middle
+\fi
+\ifx&#1&%
+      %do nothing
+\else
+      \draw [->] ($(Position) + (0,-#2)$) -- + ($(\exwidth,0)$);%draw arrow 
+ 	 \draw ($(Position) + (\exwidth/2,-#2)$) ++ (0,0ex) node [anchor=north]{#1};%label arrow middle
+\fi
+\coordinate (Position) at ($(Position)+(\exwidth,0)$);%change position
+}
+%-------------------------------------------
+
+
+%InPulse-----------------------------
+%Call with \InPulse[Label][ArrowLabel]{Arrowheight}
+%The arguments in brackets are optional. Use:
+%\InPulse{}  for only pulse
+%\InPulse[$\phi$]{}  for pulse with phase label
+%\InPulse[][$t_1$]{\arrowheight}  for pulse with arrow and label (make label ' ' for arrow without label)
+%\InPulse[$\phi$][$t_1$]{\arrowheight}  for pulse with arrow, label and phase.
+\newcommand{\InPulse}[1][]{%
+  \def\Label{#1}%
+  \draw [fill=gray] (Position) rectangle ++(\inwidth,\inheigth);%draw rectangle
+  \InPulseNext
+}
+\newcommand{\InPulseNext}[2][]{%
+\ifx&\Label&%
+      %do nothing
+\else
+     \draw (Position) ++ ($(\inwidth/2,\inheigth)$)++ (0,2ex) node [anchor=base] {\Label};%draw label
+\fi
+
+\ifx&#1&%
+      %do nothing
+\else
+      \draw [->] ($(Position) + (0,-#2)$) -- + ($(\inwidth,0)$);%draw arrow 
+ 	 \draw ($(Position) + (\inwidth/2,-#2)$)++ (0,0) node [anchor=north]{#1};%label arrow middle
+\fi
+\coordinate (Position) at ($(Position)+(\inwidth,0)$);%change position
+}
+%-------------------------------------------
+
+
+%Delay-----------------------------
+%call with Delay[arrowheight][label]{}
+%If no arrowheight: default
+%If no label: no arrow (so \Delay[][ ]{} will draw a arrow at the default with no label (only a space)
+\newcommand{\Delay}[1][]{%
+\ifx&#1&%
+	\def\Height{\arrowheigth}%
+\else
+	\def\Height{#1}
+\fi
+  
+  \DelayNext
+}
+\newcommand{\DelayNext}[2][]{%
+\ifx&#2&%
+	\def\Width{\tauwidth}%
+\else
+	\def\Width{#2}
+\fi
+
+\draw (Position) -- ++(\Width,0); %draw baseline
+
+\ifx&#1&%
+      %do nothing
+\else
+	 \draw [<->] ($(Position) + (\arrowsep,\Height)$) -- + ($(\Width-2*\arrowsep,0)$);%draw arrow
+     \draw ($(Position) + (\Width/2,\Height)$) node [shape=rectangle,fill=white,draw=white,draw]{#1}; %draw arrow label
+\fi
+
+\coordinate (Position) at ($(Position)+(\Width,0)$);%change position
+}
+%-------------------------------------------
+
+
+%FID-----------------------------
+\newcommand{\FID}[1][]{%
+\ifx&#1&%
+	\def\Height{\fidarrowheight}%
+\else
+	\def\Height{#1}
+\fi
+
+%  \draw (Position) -- ++ (\fidlengthCM,0);%draw baseline
+  \draw let \p1 = (Position) in [domain=0:\fidlength,smooth,samples=100,xshift=\x1,yshift=\y1] plot (\x,{\fidheigth*cos((\x)*\freq r)*exp(-(\x)/\t2)});%draw fid at the correct position (shifted)
+  \FIDNext
+ }
+\newcommand{\FIDNext}[1][]{%
+\ifx&#1&%
+      %do nothing
+\else
+	\draw [->] ($(Position) + (0,\Height)$) -- +($(\fidlengthCM-\arrowsep,0)$);%draw arrow
+	\draw ($(Position) + (\fidlengthCM/2,\Height)$) node [anchor=north] {#1};%draw label
+\fi
+
+\coordinate (Position) at ($(Position)+(\fidlength,0)$);%change position
+}
+%---------------------------------
+
+%Echo-----------------------------
+\newcommand{\Echo}[1][]{%
+\ifx&#1&%
+	\def\Height{\fidarrowheight}%
+\else
+	\def\Height{#1}
+\fi
+
+%  \draw (Position) -- ++ ($(2*\fidlengthCM,0)$);%baseline
+  \draw let \p1 = ($(Position)+(\fidlengthCM,0)$) in [domain=-\fidlength:\fidlength,smooth,samples=200,xshift=\x1,yshift=\y1] plot (\x,{\fidheigth*cos((\x)*\freq r)*exp(-abs(\x)/\t2)});%echo 
+  \EchoNext
+}
+
+\newcommand{\EchoNext}[1][]{%
+\ifx&#1&%
+      %do nothing
+\else
+	\draw [->] ($(Position) + (0,\Height)$) -- +($(2*\fidlengthCM-\arrowsep,0)$);%arrow
+	\draw ($(Position) + (\fidlengthCM,\Height)$) node [anchor=north] {#1};%label
+\fi
+
+\coordinate (Position) at ($(Position)+(2*\fidlength,0)$);%change position
+}
+%---------------------------------
+
+\newcommand{\OpenRepeat}{%opens a repeat block
+\draw [semithick] (Position) -- ++ (0,\repeatheight) -- ++ (\repeatwidth,0);
+\draw [semithick] (Position) -- ++ (0,-\repeatdepth) -- ++ (\repeatwidth,0);
+}
+
+\newcommand{\CloseRepeat}[1]{%closes a repeat block with multiplication label as entry
+\draw [semithick] (Position) -- ++ (0,\repeatheight) node [anchor=south west] {#1}-- ++ (-\repeatwidth,0);
+\draw [semithick] (Position) -- ++ (0,-\repeatdepth) -- ++ (-\repeatwidth,0);
+}
+
+\newcommand{\Nucleus}[1]{%specifies the nucleus type at the beginning of the sequence
+\draw (Position) node{\large #1};%draw nucleas symbole
+\coordinate (Position) at ($(Position)+(\nucleuswidth,0)$);%change position
+}
