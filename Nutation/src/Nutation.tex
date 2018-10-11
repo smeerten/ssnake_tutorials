@@ -142,7 +142,7 @@ This last step is removing a data point from the end (in this case an added zero
 
 \begin{itemize}
 \item Phase with -90$^\circ$ to get the in-phase spectrum.
-\item Clear the reference frequency (none is needed) via Plot $\longrightarrow$ Reference $\longrightarrow$ Clear Current Reference.
+\item Clear the reference frequency (none is needed) via Tools $\longrightarrow$ Reference $\longrightarrow$ Clear Current Reference.
 \end{itemize}
 We now must set the sweepwidth to the right value, as ssNake does not automatically understand what the D1 dimension means. In our case, the dwell time of the experiment is the stepsize of the pulse width: 6~$\muup$s. We can therefore type in the sweepwidth box in the bottomframe: `1000/6e-6'. `1/6e-6' gives us the sweepwidth in Hz, and the 1000 is added for conversion to kHz. Alternatively, `1/6e-3' leads to the same result in a shorter way. This leads to the following Figure, which is the final spectrum. It shows an (nearly) anti-symmetric spectrum with a peak at 50~kHz, so $\nu_1 = 50\;$kHz in this case.
 \begin{center}
