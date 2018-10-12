@@ -86,11 +86,11 @@ establish these values.
 
 
 \section{Data}
-The data in this tutorial was recorded on a Varian 300 MHz machine on glycine powder without the use
-of MAS. The spectrum shows the $^{13}$C resonance of the carboxyl group of glycine.
+The data in this tutorial was recorded on a Varian 300 MHz machine on glycine powder.
+The spectrum shows the $^{13}$C resonance of the carboxyl group of glycine.
 
 
-\section{Fitting}
+\section{Fitting a static CSA pattern}
 Begin by loading the processed data called \texttt{GlycineStatic.mat} that is delivered with this
 tutorial. As this is a chemical shift pattern, we want the x-axis to be in ppm:
 \begin{itemize}
@@ -168,5 +168,69 @@ the right. This gives 177.0, $-70.93$, and 0.9107. Using these other definitions
 convenient during fitting, for example in cases were you known $\delta_\text{iso}$ or $\eta$, and you
 want to fix these values during the fit. Do note that in some definitions the mouse cannot be used
 to sets values by clicking in the spectrum.
+
+\section{Fitting a MAS CSA pattern}
+Naturally, ssNake can also fit a CSA pattern when it has been measured under MAS conditions. This
+goes large the same way, although there are some extra thing to take notice of.
+
+Start by loading \texttt{Glycine1kHzMAS.mat} that is delivered with this tutorial. Again, put the
+axis on ppm before continuing. Go to the fitting routine via \texttt{Fitting $\longrightarrow$ CSA}.
+This shows:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig7.png}
+\end{center}
+In principal, we could use the mouse again to set the initial values of the tensor values. However,
+in this spinning spectrum, these values are not really clear. But still, we can give a rough size of
+the tensor. We can start with the same values as for the static fit: 243, 181 and 106 ppm.
+
+Before we can do a useful simulation, we must tell ssNake that we are using MAS:
+\begin{itemize}
+  \item Set \texttt{MAS} to \texttt{Finite MAS}
+  \item Set \texttt{Spin.\ speed} on 1 kHz
+\end{itemize}
+Pushing \texttt{Sim} shows:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig8.png}
+\end{center}
+By default, the integral is set to the integral of the experimental spectrum. In this case, this
+looks to big, but this is mostly due to the too low line broadening values. Let's put these to some
+better values (close to the experimental).
+\begin{itemize}
+  \item Put \texttt{Lorentz} on 40 Hz
+\end{itemize}
+This gives something more reasonable.
+
+When fitting this spectrum, it is important to realise that it is actually quite a hard fit. The
+very small lines can be hard to find for the iterative process. It is best that we help the fitting
+a bit by fixing some values. In this MAS spectrum, the isotropic shift is readily found. In this
+case, it is at 176.54 ppm. In principle, this value does not need to be fit, as we already now it.
+So lets fix it at this value:
+\begin{itemize}
+  \item Change the definition to iso--aniso--eta
+  \item Increase the number of significant digits to 5 (see \texttt{Preferences} on the left)
+	\item Set $\delta_\text{iso}$ to 176.54 and tick on the left of this value (to fix it)
+	 \item Push \texttt{Sim}
+\end{itemize}
+This should show:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig9.png}
+\end{center}
+What is clear from this Figure, is that the spinning speed is not set properly. Clearly, the
+experimental spectrum was measured with a bit more than 1 kHz MAS. We can manually correct this by
+looking at one of the peaks further away from the centre, and adjusting the speed till these
+sidebands overlap.
+\begin{itemize}
+  \item Set \texttt{Spin.\ speed} at 1.0590 kHz
+\end{itemize}
+Now, we are ready to fit! Pushing \texttt{Fit} optimizes all unticked parameters. This already leads
+to a reasonable fit. Now that we are close to the optimum, we can also `release' the
+$\delta_\text{iso}$ and spin speed parameters by unticking their boxes. Pushing Fit again optimizes
+all the values. This should lead to 176.58, $-69.457$, and 0.91502 for iso, aniso and eta. Which is
+pretty close to the values we got for the static spectrum. Note that we did not touch the \texttt{\#
+sidebands} parameter. This must always be higher than the number of observed sidebands in the
+simulation. In this case, the default 32 is sufficient.
+
+
+
 
 \end{document}
