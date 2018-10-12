@@ -1,0 +1,172 @@
+% Copyright 2016 - 2018 Bas van Meerten and Wouter Franssen
+%
+%This file is part of ssNake.
+%
+%ssNake is free software: you can redistribute it and/or modify
+%it under the terms of the GNU General Public License as published by
+%the Free Software Foundation, either version 3 of the License, or
+%(at your option) any later version.
+%
+%ssNake is distributed in the hope that it will be useful,
+%but WITHOUT ANY WARRANTY; without even the implied warranty of
+%MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%GNU General Public License for more details.
+%
+%You should have received a copy of the GNU General Public License
+%along with ssNake. If not, see <http://www.gnu.org/licenses/>.
+
+\documentclass[11pt,a4paper]{article}
+\include{DeStijl}
+
+\usepackage[bitstream-charter]{mathdesign}
+\usepackage[T1]{fontenc}
+\usepackage[protrusion=true,expansion,tracking=true]{microtype}
+\pgfplotsset{compat=1.7,/pgf/number format/1000 sep={}, axis lines*=left,axis line style={gray},every outer x axis line/.append style={-stealth'},every outer y axis line/.append style={-stealth'},tick label style={font=\small},label style={font=\small},legend style={font=\footnotesize}}
+\usepackage{colortbl}
+\usetikzlibrary{calc}
+
+%Set section font
+\usepackage{sectsty}
+\allsectionsfont{\color{black!70}\fontfamily{SourceSansPro-LF}\selectfont}
+%--------------------
+
+
+%Set toc fonts
+\usepackage{tocloft}
+%\renewcommand\cftchapfont{\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cfttoctitlefont{\color{black!70}\Huge\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cftsecfont{\fontfamily{SourceSansPro-LF}\selectfont}
+%\renewcommand\cftchappagefont{\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cftsecpagefont{\fontfamily{SourceSansPro-LF}\selectfont}
+\renewcommand\cftsubsecfont{\fontfamily{SourceSansPro-LF}\selectfont}
+\renewcommand\cftsubsecpagefont{\fontfamily{SourceSansPro-LF}\selectfont}
+%--------------------
+
+%Define header/foot
+%\usepackage{fancyhdr}
+%\pagestyle{fancy}
+%\fancyhead[LE,RO]{\fontfamily{SourceSansPro-LF}\selectfont \thepage}
+%\fancyhead[LO,RE]{\fontfamily{SourceSansPro-LF}\selectfont \leftmark}
+%\fancyfoot[C]{}
+%--------------------
+
+%remove page number from first chapter page
+%\makeatletter
+%\let\ps@plain\ps@empty
+%\makeatother
+%----------------------
+
+\usepackage[hidelinks,colorlinks,allcolors=black, pdftitle={CSA pattern fitting in ssNake},pdfauthor={Wouter M.J.\ Franssen}]{hyperref}
+
+\interfootnotelinepenalty=10000 %prevents splitting of footnote over multiple pages
+\linespread{1.2}
+
+\title{\color{black}\fontfamily{SourceSansPro-LF}\bfseries CSA pattern fitting in ssNake}
+\author{}
+\date{\color{black}\fontfamily{SourceSansPro-LF}\bfseries \today}
+
+
+\begin{document}
+%\newgeometry{left=72pt,right=72pt,top=95pt,bottom=95pt,footnotesep=0.5cm}
+\microtypesetup{protrusion=true} % enables protrusion
+
+\maketitle
+
+\section{Introduction}
+The following will explain how CSA NMR data can be fitted ssNake.
+ The
+tutorial delivered with the ssNake program is considered as prior knowledge. If you have not yet
+studied this, please do so before continuing with this example.
+
+In solid state NMR anisotropic chemical shift interactions (CSA) can be a relevant factor in the
+description of a spectrum. While, using fast magic angle spinning, the isotropic term can be easily
+established, the size and symmetry of the anisotropy are somewhat harder to determine. As these
+spectra can be simulated in a straightforward way, fitting the experimental data is a good way to
+establish these values.
+
+
+\section{Data}
+The data in this tutorial was recorded on a Varian 300 MHz machine on glycine powder without the use
+of MAS. The spectrum shows the $^{13}$C resonance of the carboxyl group of glycine.
+
+
+\section{Fitting}
+Begin by loading the processed data called \texttt{GlycineStatic.mat} that is delivered with this
+tutorial. As this is a chemical shift pattern, we want the x-axis to be in ppm:
+\begin{itemize}
+  \item In the bottomframe, set \texttt{Axis} to \texttt{ppm}
+\end{itemize}
+This should show this:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig1.png}
+\end{center}
+Which is a nice CSA powder pattern of a static sample. We now need to fit this data to extract the
+CSA tensor parameters. Go to \texttt{Fitting $\longrightarrow$ CSA}.
+
+This show the following window:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig2.png}
+\end{center}
+
+This window has quite some parameters that we can change. The most important are the boxes on the
+right: $\delta_{11}$, $\delta_{22}$, and $\delta_{33}$ are the CSA tensor values. Also shown are some
+line broadening parameters (Lorentz and Gauss). The tick boxes next to the input boxes indicate
+whether or not the parameters are fixed (checked) or that they may be change during the iterative
+fitting (unchecked).
+
+Before we can be an iterative fit, me must first supply some starting values for the fit. This makes
+it easier for ssNake to find the best solution. In this CSA fit, this can be easily done by left
+clicking on the spectrum: each click sets on of the $\delta$-values to the ppm value under the
+cursor. In this case, these values should be equal to the extremities of the powder pattern, and
+the `peak' in the center. Left click on the left part of the pattern, the `peak' and the right part.
+This should set the $\delta$-values to approximately 243, 181 and 106 ppm, which are good starting
+values.
+
+Pushing `Sim' in the left part of the window simulates a spectrum using our current settings. Doing
+this leads to:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig3.png}
+\end{center}
+which looks very ugly. Here the orange line represents the simulated spectrum. The reason why it
+looks like this is because the line broadening is quite low (1 Hz), and we only simulate a finite number
+of powder orientating. This leads to a series of peaks for each crystal orientation in our synthetic
+powder, and not a nice pattern. This issue can be overcome by increasing the number of powder
+orientations.
+\begin{itemize}
+  \item Change the Cheng\footnote{The Cheng number represents the number of orientation to be
+	 simulated. It is an exponential scale, so it increases quite fast.} number from 15 to 25
+\end{itemize}
+Simulating again shows:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig4.png}
+\end{center}
+which looks a lot more like a powder pattern. However, with Cheng at 25, the simulation starts to
+become slower due to the high amount of orientations. In this case we actually do not need so many
+orientations: our actual spectrum is not so precisely defined as there is significant
+line broadening present (you can see this at the rounded edges of the pattern). Adding line
+broadening to the simulations also means we need less powder orientations:
+\begin{itemize}
+  \item Set Cheng back to 15
+  \item Set Lorentz at 500 Hz
+\end{itemize}
+Pushing `Sim' gives:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig5.png}
+\end{center}
+which is quite close to the experimental spectrum.
+
+We are now ready to let ssNake do some iterative fitting, to achieve the best description of our
+spectrum. Push `Fit' to let it work its magic. This leads to the final fit:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig6.png}
+\end{center}
+with tensor values 244.8, 180.2, and 106.1 ppm. Often, the CSA tensor values are expressed in
+another definitions. Common is the iso-aniso-eta definition. We can tell ssNake we need these values
+by switching the definition from $\delta_{11}$--$\delta_{22}$--$\delta_{33}$ to
+$\delta_\text{iso}$--$\delta_\text{aniso}$--$\eta$. ssNake automatically converts the tensor values on
+the right. This gives 177.0, $-70.93$, and 0.9107. Using these other definitions can also be
+convenient during fitting, for example in cases were you known $\delta_\text{iso}$ or $\eta$, and you
+want to fix these values during the fit. Do note that in some definitions the mouse cannot be used
+to sets values by clicking in the spectrum.
+
+\end{document}
