@@ -1,0 +1,185 @@
+% Copyright 2016 - 2018 Bas van Meerten and Wouter Franssen
+%
+%This file is part of ssNake.
+%
+%ssNake is free software: you can redistribute it and/or modify
+%it under the terms of the GNU General Public License as published by
+%the Free Software Foundation, either version 3 of the License, or
+%(at your option) any later version.
+%
+%ssNake is distributed in the hope that it will be useful,
+%but WITHOUT ANY WARRANTY; without even the implied warranty of
+%MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%GNU General Public License for more details.
+%
+%You should have received a copy of the GNU General Public License
+%along with ssNake. If not, see <http://www.gnu.org/licenses/>.
+
+\documentclass[11pt,a4paper]{article}
+\include{DeStijl}
+
+\usepackage[bitstream-charter]{mathdesign}
+\usepackage[T1]{fontenc}
+\usepackage[protrusion=true,expansion,tracking=true]{microtype}
+\usepackage{siunitx}
+
+%Set section font
+\usepackage{sectsty}
+\allsectionsfont{\color{black!70}\fontfamily{SourceSansPro-LF}\selectfont}
+%--------------------
+
+
+%Set toc fonts
+\usepackage{tocloft}
+%\renewcommand\cftchapfont{\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cfttoctitlefont{\color{black!70}\Huge\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cftsecfont{\fontfamily{SourceSansPro-LF}\selectfont}
+%\renewcommand\cftchappagefont{\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cftsecpagefont{\fontfamily{SourceSansPro-LF}\selectfont}
+\renewcommand\cftsubsecfont{\fontfamily{SourceSansPro-LF}\selectfont}
+\renewcommand\cftsubsecpagefont{\fontfamily{SourceSansPro-LF}\selectfont}
+%--------------------
+
+%Define header/foot
+%\usepackage{fancyhdr}
+%\pagestyle{fancy}
+%\fancyhead[LE,RO]{\fontfamily{SourceSansPro-LF}\selectfont \thepage}
+%\fancyhead[LO,RE]{\fontfamily{SourceSansPro-LF}\selectfont \leftmark}
+%\fancyfoot[C]{}
+%--------------------
+
+%remove page number from first chapter page
+%\makeatletter
+%\let\ps@plain\ps@empty
+%\makeatother
+%----------------------
+
+\usepackage[hidelinks,colorlinks,allcolors=black, pdftitle={COSY processing in ssNake},pdfauthor={Wouter M.J.\ Franssen}]{hyperref}
+
+\interfootnotelinepenalty=10000 %prevents splitting of footnote over multiple pages
+\linespread{1.2}
+
+\title{\color{black}\fontfamily{SourceSansPro-LF}\bfseries COSY processing in ssNake}
+\author{}
+\date{\color{black}\fontfamily{SourceSansPro-LF}\bfseries \today}
+
+
+\begin{document}
+%\newgeometry{left=72pt,right=72pt,top=95pt,bottom=95pt,footnotesep=0.5cm}
+\microtypesetup{protrusion=true} % enables protrusion
+
+\maketitle
+
+\section{Introduction}
+A correlation spectroscopy (COSY) experiment is one of the most common 2D NMR experiments. It is
+used to visualise through-bond connections in molecules (via J-couplings). In the 2D spectrum,
+cross-peaks appear between lines which are J-coupled. As J-couplings are hard to observe in the
+solid state, COSY experiments are usually only recorded for liquid state samples. In this tutorial,
+we will show how to process magnitude COSY data (a phase sensitive COSY should be processed
+differently).
+
+
+
+\section{Data}
+The data for this tutorial is a magnitude type $^1$H--$^1$H COSY spectrum of a mixture of toluene
+and ethyl pyruvate (1:1) recorded on a \SI{1}{\tesla} (\SI{43}{\MHz}) Magritek device. In this case,
+we expect to see cross-peaks between the two lines of toluene, and between the CH$_3$ and CH$_2$
+resonances of ethyl pyruvate (the base methyl group of ethyl pyruvate overlaps with the methyl
+group of toluene). The 1D $^1$H spectrum of this sample is shown below.
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/1D.pdf}
+\end{center}
+
+\section{Processing the data}
+In principle, processing a magnitude type COSY spectrum is no big deal. All that is required is a
+Fourier transform along both axes.
+
+
+\begin{itemize}
+  \item Open the Magritek file using \texttt{File $\longrightarrow$ Open}
+  and navigate to the `cosy' folder. Opening one of the files here opens the data
+  \item Fourier transform via the `Fourier' button
+\end{itemize}
+This should give:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig1.png}
+\end{center}
+Note that the line we see here have a very bad phase. This is not important, as the final view of
+this data only means something in absolute mode (we will do this later on). We also need a Fourier
+transform in the indirect dimension:
+
+\begin{itemize}
+  \item Switch to viewing D1 by clicking on its radio button in the sideframe
+\item Do a complex conjugate via \texttt{Tools $\longrightarrow$ Complex Conjugate} \footnote{Doing
+	 a complex conjugate flips the resulting spectrum. This is needed in ssNake, as Magritek uses a
+	 different definition for the rotation direction of the magnetization. For the direct dimension,
+	 this is always necessary, and is done by ssNake upon loading the data. If the indirect dimension
+  is also a spectral axis, you need to do this manually for this axis. If you do not do this, the
+resulting spectrum will be mirrored.}
+  \item Fourier transform via the `Fourier' button
+  \item Switch back to viewing D2 by clicking on its radio button in the sideframe
+\end{itemize}
+
+Now that we have processed both dimension, we want to view the spectrum as a contour plot:
+\begin{itemize}
+  \item Switch to view to a contour plot via \texttt{Plot $\longrightarrow$ Contour}
+\end{itemize}
+This should show (zoomed in):
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig2.png}
+\end{center}
+We are not seeing much, but the lower contour cutoff is at 10\%, so we should lower this to see
+more:
+\begin{itemize}
+  \item Set the minimum contour limit to 1\% (in the sideframe, under `Contour
+	 limits')\footnote{Note that you can also `zoom' the contours by scrolling the mouse button while
+	 holing the `shift' button}
+\end{itemize}
+This shows:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig3.png}
+\end{center}
+As you can see, we have some issues with the phase. This is because we should view this data in
+absolute mode:
+\begin{itemize}
+  \item Set the plot to absolute (bottom frame under `Plot' set to `Abs')
+\end{itemize}
+This gives:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig4.png}
+\end{center}
+which starts to look like a COSY! To better see what are cross peaks, and which lines are on the
+diagonal, we can ask ssNake to plot a line on the diagonal:
+\begin{itemize}
+  \item Turn on the diagonal by ticking the box in the sideframe
+\end{itemize}
+This shows:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig5.png}
+\end{center}
+Which is our final spectrum. You can see some `star' patterns in this spectrum, especially for the
+strong toluene lines. This come from the fact to we view the data in absolute mode (which is
+unavoidable for this experiment). The next section will describe how we can reduce these. 
+
+
+\section{Sine square apodization}
+In order to reduce the `star' artifacts in a COSY experiment, we can use some special apodization
+along both D2 and D1. For this, we do the same processing as before, but before each Fourier
+transform we do a sine square apodization (which we do in ssNake with a 90$\circ$ phase shifted
+cosine square apodization):
+\begin{itemize}
+  \item Apodize with Cos\^{}2 with frequency 2, and phase 90 (\texttt{Tools $\longrightarrow$ Apodize})
+\end{itemize}
+If we do this along D2, we should see something like this:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig6.png}
+\end{center}
+Doing this along both D2 and D1 leads (after performing all the steps described above) to the
+following 2D spectrum:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig7.png}
+\end{center}
+Which shows a strong reduction of the `star' effect.
+
+
+\end{document}
