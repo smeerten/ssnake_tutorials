@@ -77,22 +77,20 @@ with a considerable chemical shift anisotropy (CSA). If the MAS spinning speed c
 value higher than the strongest CSA, an isotropic spectrum can be obtained in a normal 1D NMR
 experiment. In the intermediate cases, severe overlap of sidebands can make it difficult to recover
 isotropic information. In a 2D pass experiment, after proper processing, each order of sideband is
-contained in a spectre spectrum. The centre spectrum of this series will be the isotropic spectrum.
+contained in a single spectrum. The centre spectrum of this series will be the isotropic spectrum.
 
-The following will describe how to process such 2D-PASS data in ssNake.
+This tutorial will describe how to process such 2D-PASS data in ssNake.
 
 
 
 \section{Data}
 Delivered with this tutorial is a $^{13}$C data set of alanine.
 \texttt{13C\_Alanine\_1250Hz.fid} is a 2D-PASS spectrum of alanine measured at \SI{300}{\MHz} and
-\SI{1250}{\Hz} MAS.  The spectrum was obtained on a Varian system.
+\SI{1250}{\Hz} MAS. The spectrum was obtained using a Varian spectrometer.
 
 
 
 \section{Processing the data}
-To start, we will process the more accessible spectrum of alanine.
-
 
 \begin{itemize}
   \item Open the Varian file \texttt{13C\_Alanine\_1250Hz.fid} using \texttt{File $\longrightarrow$
@@ -115,6 +113,7 @@ distinguish sidebands from centrebands.
 
 We will now change the view to D1, and process this dimension.
 \begin{itemize}
+  \item Using the `Get Position' button, the trace of the carboxyl centreband can be determined to be 2348
   \item Fill in `2438' at the D2 box in the sideframe, and press enter
 \end{itemize}
 This now shows the change of the centreband of this carboxyl group over the separate PASS spectra:
@@ -122,13 +121,12 @@ This now shows the change of the centreband of this carboxyl group over the sepa
 \includegraphics[width=0.8\linewidth]{Figs/Fig2.png}
 \end{center}
 We now want to Fourier transform also along this dimension. However, we need an extra trick. In a
-regular Fourier transform, the first point of the FID is always multiplied by 0.5, to get a flat
-baseline spectrum (i.e. to get rid of the frequency-independent Fourier term). This works well only
-if our signal decays to 0. In the current case, we do not really have an FID, and no decay to 0 is
-present. We must therefore tell ssNake to not multiply the first point by 0.5. To do this, we enable
-the `Whole echo' mode in the bottom frame (tick the box).
+regular Fourier transform, the first point of the FID is always multiplied by 0.5, to get rid of the baseline offset.
+This works well only if our signal decays to 0. In the current case, we do not really have an FID, and no decay to 0 is present.
+To correctly process this dimension, the `Whole echo' mode should be enabled.
+To do this, tick the `Whole echo' box in the bottom frame.
 
-After this, we can do transform:
+After this, we transform this dimension:
 \begin{itemize}
   \item Fourier transform via the `Fourier' button
   \item Clear the current ppm reference via \texttt{Tools $\longrightarrow$ Reference
@@ -138,31 +136,30 @@ This now shows:
 \begin{center}
 \includegraphics[width=0.8\linewidth]{Figs/Fig3.png}
 \end{center}
-What we see here, is that one one point has intensity: the centre point. This is exactly what we
-expect here. Every point stands for a specific order of a sideband. The centrepoint is the isotropic
-(order is 0) value. As our position 2438 in D2 stands for an isotropic peak, it makes sense that
-only the `order is 0' point has any intensity: the sidebands are spectate.
+What we see here, is that one one data point has intensity: the centre point.
+This is exactly what we expect here.
+Every data point represents a specific order of a sideband.
+The centrepoint is the isotropic (order is 0) value.
+As our current trace (position 2438 in D2) is along the isotropic peak, only the central point should have intensity.
 
-To aid in the view of the data, we must correct the spectral width. Each point corresponds to a
-specific order of sideband, so between neighboring points, there should be \SI{1250}{\Hz} difference in
-frequency (i.e. the spinner frequency). In this case we have 16 points, so we must correct the
-spectral width accordingly:
+To aid in the view of the data, we must correct the spectral width.
+Each data point corresponds to a specific sideband order, so between neighboring data points there should be a frequency difference of \SI{1250}{\Hz} (i.e. the spinner frequency).
+There are 16 data points in dimension 1, so we must correct the spectral width accordingly:
 \begin{itemize}
   \item In the bottomframe, set the Sweepwidth to \SI{20}{\kHz} (16 * 1.250)
 \end{itemize}
-To have a more proper view of the data, lets view it as a contour plot:
+To have a more complete view of the data, lets view it as a contour plot:
 \begin{itemize}
   \item Move to D2 by clicking its radiobutton in the sideframe
-  \item Set the plot to contour via \texttt{Plot $\longrightarrow$ Contour}
+  \item Change the plot to a contour plot via \texttt{Plot $\longrightarrow$ Contour}
 \end{itemize}
-This should show (zoomed):
+The spectrum should look similar (zoomed) to:
 \begin{center}
 \includegraphics[width=0.8\linewidth]{Figs/Fig4.png}
 \end{center}
-Here we can see that the two lines on the right only have a centreband (hardly any CSA). However,
-for the carboxyl group on the left, a clear pattern emerges. Every sideband is contained in a
-specific trace along D1, and are therefore separated. When viewing this centreband (i.e. position 8
-along D1) we will see an isotropic spectrum:
+Here we can see that the two lines on the right only have a centreband (hardly any CSA).
+However, for the carboxyl group on the left, a clear pattern emerges.
+When viewing the centrebands (i.e. position 8 along D1) we will see an isotropic spectrum:
 \begin{itemize}
   \item Set the plot to 1D via \texttt{Plot $\longrightarrow$ 1D Plot}
   \item Fill in `8' at the box of D1 in the side frame, and press `enter'
@@ -171,38 +168,37 @@ This should show (zoomed in):
 \begin{center}
 \includegraphics[width=0.8\linewidth]{Figs/Fig5.png}
 \end{center}
-Which is a very nice isotropic spectrum. However, by only looking at this single trace, we are
-losing a lot of signal! It is therefor better to sum all the sidebands for each site. This is
-actually very easy for 2D-PASS data.
+Which is a very nice isotropic spectrum.
+However, by only looking at this single trace, we are losing a lot of signal!
+It is therefor better to sum all the sidebands for each site.
+This is actually very easy for 2D-PASS data.
 \begin{itemize}
   \item Set the plot to contour via \texttt{Plot $\longrightarrow$ Contour}
 \end{itemize}
-Now we again have the contour plot shown above. What we will now do is shear the data in such a way
-that all the sidebands of the carboxyl group end up along a vertical line along D1. As we have
-\SI{1250}{\Hz} as a spinning speed, the spectrum that contains the first order sidebands much be shifted by
-\SI{-1250}{\Hz} for it to align with the centreband. The same holds fro the second order sideband
-(shift by $-2500$), etc. As we have corrected the spectral width of D1, we can do this via a
-shearing transform.
+What we will now do is shear the data in such a way that all the sidebands of the carboxyl group end up along a vertical line along D1.
+As we have \SI{1250}{\Hz} as a spinning speed, the spectrum that contains the first order sidebands much be shifted by \SI{-1250}{\Hz} for it to align with the centreband.
+The same holds for the second order sideband (shift by $-2500$), etc.
+As we have corrected the spectral width of D1, we can do this via a shearing transform.
 \begin{itemize}
   \item Shear via \texttt{Matrix $\longrightarrow$ Shear} with `1' as a constant, `2' for direction,
 	 and `1' for axis.
 \end{itemize}
-This should give:
+This should result in:
 \begin{center}
 \includegraphics[width=0.8\linewidth]{Figs/Fig6.png}
 \end{center}
-which shows a proper alignment of the sidebands. As a final step, we will sum this data along D1:
+which shows a proper alignment of the sidebands.
+As a final step, we will sum this data along D1:
 \begin{itemize}
   \item Set the plot to 1D via \texttt{Plot $\longrightarrow$ 1D Plot}
   \item Switch to D1 using the radiobutton in the side frame
   \item Sum via \texttt{Matrix $\longrightarrow$ Region $\longrightarrow$ Sum} and push `Ok'
 \end{itemize}
-This shows:
+The spectrum should now look like:
 \begin{center}
 \includegraphics[width=0.8\linewidth]{Figs/Fig7.png}
 \end{center}
-Note that, when compared to the single trace spectrum above, the carbonyl has much more intensity in
-this case (relative to the other lines). Comparing the intensities of the lines for the single trace
-versus the sum tell us something about the amount of anisotropy that is present for each line.
+Note that, the carbonyl resonance is much more intense, compared to the centreband spectrum above.
+Comparing the intensity of the lines between the centreband spectrum and the summed spectrum tells us something about the amount of anisotropy that is present.
 
 \end{document}
