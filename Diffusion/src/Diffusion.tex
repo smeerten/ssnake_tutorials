@@ -1,0 +1,130 @@
+% Copyright 2016 - 2019 Bas van Meerten and Wouter Franssen
+%
+%This file is part of ssNake.
+%
+%ssNake is free software: you can redistribute it and/or modify
+%it under the terms of the GNU General Public License as published by
+%the Free Software Foundation, either version 3 of the License, or
+%(at your option) any later version.
+%
+%ssNake is distributed in the hope that it will be useful,
+%but WITHOUT ANY WARRANTY; without even the implied warranty of
+%MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%GNU General Public License for more details.
+%
+%You should have received a copy of the GNU General Public License
+%along with ssNake. If not, see <http://www.gnu.org/licenses/>.
+
+\documentclass[11pt,a4paper]{article}
+\include{DeStijl}
+
+\usepackage[bitstream-charter]{mathdesign}
+\usepackage[T1]{fontenc}
+\usepackage[protrusion=true,expansion,tracking=true]{microtype}
+\pgfplotsset{compat=1.7,/pgf/number format/1000 sep={}, axis lines*=left,axis line style={gray},every outer x axis line/.append style={-stealth'},every outer y axis line/.append style={-stealth'},tick label style={font=\small},label style={font=\small},legend style={font=\footnotesize}}
+\usepackage{colortbl}
+\usetikzlibrary{calc}
+
+%Set section font
+\usepackage{sectsty}
+\allsectionsfont{\color{black!70}\fontfamily{SourceSansPro-LF}\selectfont}
+%--------------------
+
+
+%Set toc fonts
+\usepackage{tocloft}
+%\renewcommand\cftchapfont{\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cfttoctitlefont{\color{black!70}\Huge\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cftsecfont{\fontfamily{SourceSansPro-LF}\selectfont}
+%\renewcommand\cftchappagefont{\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cftsecpagefont{\fontfamily{SourceSansPro-LF}\selectfont}
+\renewcommand\cftsubsecfont{\fontfamily{SourceSansPro-LF}\selectfont}
+\renewcommand\cftsubsecpagefont{\fontfamily{SourceSansPro-LF}\selectfont}
+%--------------------
+
+
+\usepackage[hidelinks,colorlinks,allcolors=black, pdftitle={Diffusion analysis in ssNake},pdfauthor={Wouter M.J.\ Franssen}]{hyperref}
+
+\interfootnotelinepenalty=10000 %prevents splitting of footnote over multiple pages
+\linespread{1.2}
+
+\title{\color{black}\fontfamily{SourceSansPro-LF}\bfseries Diffusion analysis in ssNake (under
+construction)}
+\author{}
+\date{\color{black}\fontfamily{SourceSansPro-LF}\bfseries \today}
+
+
+\begin{document}
+%\newgeometry{left=72pt,right=72pt,top=95pt,bottom=95pt,footnotesep=0.5cm}
+\microtypesetup{protrusion=true} % enables protrusion
+
+\maketitle
+
+\section{Introduction}
+Is this tutorial, we will analyse a diffusion measurement of a liquid state sample in ssNake.
+Diffusion is a powerful tool to distinguish multiple molecules in complicated spectra, especially when
+other 2D methods cannot readily identify the different components. The diffusion experiment consists
+of a spin-echo experiment, with gradients present during the echo time. In case of no diffusion,
+each nucleus experiences the same B$_0$ field during the first part of the echo as during the last,
+and perfect echo refocussing occurs. In case of displacements in this time (i.e.\ diffusion), the
+B$_0$ field are different during part 1 and part 2 of the echo, and attenuation of the signal occurs.
+If the strength and durations of the gradients are known, the diffusion constant can be extracted
+from such a measurement.
+
+
+\section{Data}
+The data for this tutorial was recorded at 600 MHz.
+The sample was a mixture of 2-ethylpyridine en 2,3,3-trimethylpyrazine in DMSO (with TMS).
+The maximum gradient strength was 0.535 T/m. The relevant times were: $\delta = 1$ ms, and $\Delta =
+100$ ms.
+
+\section{Fitting a diffusion curve}
+Start by loading the Bruker type data:
+\begin{itemize}
+  \item Load the `ser' file that was delivered with this tutorial
+\end{itemize}
+
+Now, we want to zero-fill the data, as well as correct for the Bruker time delay (i.e.\ digital
+filter). It is best to do the zero-filling first:
+\begin{itemize}
+  \item Use `Matrix $\longrightarrow$ Sizing', and set the size to 32768
+  \item Correct the digital filter by using `Tools $\longrightarrow$ Correct digital filter'
+  \item Fourier transform
+\end{itemize}
+Correct for the phasing:
+\begin{itemize}
+  \item Phase using `Tools $\longrightarrow$ Phasing' with 173.724 zero order, and -33.86 first
+	 order
+\end{itemize}
+Now, we will analyse the intensity variation of, say, the leftmost peak (highest ppm value). In
+order to do this, we will integrate this region, and send this data to a now workspace (to not
+remove the rest of the data).
+\begin{itemize}
+  \item Use `Matrix $\longrightarrow$ Region $\longrightarrow$', and integrate between point 28482
+	 and 28570. (or left click on the left and right side of the relevant peak in the spectrum.
+	 Remember to tick the box that says `Results in new workspace'.
+\end{itemize}
+This should show:
+\begin{center}
+\includegraphics[width=0.8\linewidth]{Figs/Fig1.png}
+\end{center}
+which shows  a nice Gaussian decay due to the diffusion.
+
+Now, we want to fit this decay, which means that we must supply ssNake with the relevant x-axis. In
+this case, we have measured multiple spectra with a different gradient strengths. The strengths were
+approximately linear, with real values: 2.408, 5.296, 8.186, 11.075, 13.963, 16.852, 19.741, 22.630,
+25.520 , 28.409, 31.298, 34.187, 37.076, 39.965, 42.854 and 45.742\%. We must reculate these value
+using the maximum gradient strength of the setup (0.535 T/m). With these values, we must change the
+x-axis in ssNake:
+
+\begin{itemize}
+  \item Use `Plot $\longrightarrow$ User x-axis' and fill in: array([2.408, 5.296, 8.186, 11.075, 13.963, 16.852, 19.741, 22.630,
+25.520 , 28.409, 31.298, 34.187, 37.076, 39.965, 42.854 , 45.742])*0.535/100 
+\item Set the Axis unit to `s'
+\end{itemize}
+Here, we make use of ssNake's calculation capability to multiply the array by some values. Note that
+the axis still shows `Time D1 [s]', while actually it is a gradient strength (you need to remember
+this for yourself!).
+
+
+\end{document}
