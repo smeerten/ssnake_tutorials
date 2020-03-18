@@ -103,7 +103,7 @@ The data was recorded with 2 to 40 rotor periods per echo delay (in steps of 2).
 
 
 \section{Processing}
-Processing REDOR data is not difficutl.
+Processing REDOR data is not difficult.
 Only a couple of steps are required.
 
 \begin{itemize}
@@ -122,10 +122,10 @@ For this, we integrate the peak.
 Note that ssNake has two types of integral: via Fitting  $\longrightarrow$ Integrals, which can be seen as a way to ask ssNake `what is the integral of this peak'.
 Or via Matrix $\longrightarrow$ Region $\longrightarrow$
 Integrate, which integrates a region across all traces and sets the new data to the integrals.
-In this case, we require the latter type of integrations.
+In this case, we require the latter type of integration.
 
 \begin{itemize}
-\item Use Matrix $\longrightarrow$ Region $\longrightarrow$ Integrate and click on the left and right side of the CH2 peak (ignore the tiny peak next to it for the moment). For example, positions 5679 and 5861.
+\item Use Matrix $\longrightarrow$ Region $\longrightarrow$ Integrate and click on the left and right side of the CH$_2$ peak (ignore the tiny peak next to it for the moment). For example, positions 5679 and 5861.
 \end{itemize}
 This should result in a curve like:
 \begin{center}
@@ -164,7 +164,7 @@ This should result in:
 \includegraphics[width=0.8\linewidth]{Figs/Fig4.png}
 \end{center}
 Now, we must divide the data by $S_\text{wo}$.
-However, we should realize that, when dividing data, we do not want to perfom a division of complex numbers (the integrals still contain the imaginary information).
+However, we should realize that, when dividing data, we do not want to perform a division of complex numbers (the integrals still contain the imaginary information).
 Therefore, we should first take the real values of the data:
 \begin{itemize}
 \item In workspace `Diff' do Tools $\longrightarrow$ Real
@@ -178,11 +178,11 @@ This results in:
 All values fall between 0 and 1 (as it should be).
 
 Now, we can set the axis.
-The first point was 2 rotor periods, the last 40. Note that this means 4 and 80 for the total echo time.
+The first point was 2 rotor periods, the last 40. 
 The spinning speed was 5 kHz, so a period is 0.2 ms.
-This means that the axis should range from 0.8 to 32 ms:
+This means that the axis should range from 0.4 to 8 ms:
 \begin{itemize}
-\item In workspace `Diff' use Plot $\longrightarrow$ User X-axis (Type: Linear, Start: 0.8e-3, Stop: 32e-3)
+\item In workspace `Diff' use Plot $\longrightarrow$ User X-axis (Type: Linear, Start: 0.4e-3, Stop: 8e-3)
 \end{itemize}
 So the final figure should look like:
 \begin{center}
