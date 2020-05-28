@@ -1,0 +1,95 @@
+% Copyright 2016 - 2019 Bas van Meerten and Wouter Franssen
+%
+%This file is part of ssNake.
+%
+%ssNake is free software: you can redistribute it and/or modify
+%it under the terms of the GNU General Public License as published by
+%the Free Software Foundation, either version 3 of the License, or
+%(at your option) any later version.
+%
+%ssNake is distributed in the hope that it will be useful,
+%but WITHOUT ANY WARRANTY; without even the implied warranty of
+%MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%GNU General Public License for more details.
+%
+%You should have received a copy of the GNU General Public License
+%along with ssNake. If not, see <http://www.gnu.org/licenses/>.
+
+\documentclass[11pt,a4paper]{article}
+\include{DeStijl}
+
+\usepackage[bitstream-charter]{mathdesign}
+\usepackage[T1]{fontenc}
+\usepackage[protrusion=true,expansion,tracking=true]{microtype}
+\pgfplotsset{compat=1.7,/pgf/number format/1000 sep={}, axis lines*=left,axis line style={gray},every outer x axis line/.append style={-stealth'},every outer y axis line/.append style={-stealth'},tick label style={font=\small},label style={font=\small},legend style={font=\footnotesize}}
+\usepackage{colortbl}
+\usetikzlibrary{calc}
+
+%Set section font
+\usepackage{sectsty}
+\allsectionsfont{\color{black!70}\fontfamily{SourceSansPro-LF}\selectfont}
+%--------------------
+
+
+%Set toc fonts
+\usepackage{tocloft}
+%\renewcommand\cftchapfont{\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cfttoctitlefont{\color{black!70}\Huge\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cftsecfont{\fontfamily{SourceSansPro-LF}\selectfont}
+%\renewcommand\cftchappagefont{\fontfamily{SourceSansPro-LF}\bfseries}
+\renewcommand\cftsecpagefont{\fontfamily{SourceSansPro-LF}\selectfont}
+\renewcommand\cftsubsecfont{\fontfamily{SourceSansPro-LF}\selectfont}
+\renewcommand\cftsubsecpagefont{\fontfamily{SourceSansPro-LF}\selectfont}
+%--------------------
+
+
+\usepackage[hidelinks,colorlinks,allcolors=black, pdftitle={Fitting Czjzek distribution spectra in ssNake},pdfauthor={Wouter M.J.\ Franssen}]{hyperref}
+
+\interfootnotelinepenalty=10000 %prevents splitting of footnote over multiple pages
+\linespread{1.2}
+
+\title{\color{black}\fontfamily{SourceSansPro-LF}\bfseries Fitting Czjzek spectra distribution in ssNake (Under construction)}
+\author{}
+\date{\color{black}\fontfamily{SourceSansPro-LF}\bfseries \today}
+
+
+\begin{document}
+%\newgeometry{left=72pt,right=72pt,top=95pt,bottom=95pt,footnotesep=0.5cm}
+\microtypesetup{protrusion=true} % enables protrusion
+
+\maketitle
+
+\section{Introduction}
+This tutorial describes how to fit Czjzek and Extended Czjzek quadrupolar lineshapes in ssNake. As this is relatively advanced, it is recommended to study the tutorial on CSA fitting and the single fit part of MultiFitQuadrupole first.
+
+A Czjzek lineshape occurs in case where this is a atomic site in a material with considerable distortions around it. This standard Czjzek model assumes a site with in first instance no quadrupolar coupling ($C_\text{q}=0$) due to symmetry. However, the distortions in the material break the symmery and introduce a quadrupolar coupling.
+
+Simulating a Czjzek lineshape is more involved, as it requires calculation of a whole series of quadrupolar powder patterns (the distortion is different for different positions in the material). Based on the parameters of the Czjzek distribution, the relative intensity of each of these powder patterns changes. To be able to calculate this efficiently in an iterative routine, ssNake pre-calculates the quadrupole powder patterns. In the fitting, the Czjzek parameters change, but this leads only to a different sum of the powder patterns. The collection of pre-calculated lineshapes is called the `library'.
+
+Generating this library can be done by ssNake itself, or supplied by the user from an external source. (In the ssNake paper, we used SIMPSON to calculate lineshape with excitation efficiencies include, for example.) It is in the generation of the library that settings regarding Magic Angle Spinning, inclusion of satellite intensities etc.\ are relevant.
+
+When generating the library, a grid with quadrupolar settings must be chosen: for $C_\text{q}$ and $\eta$. The smaller the steps that are taken, the more accurate the fitting, at the expense of speed. Note that while $\eta$ is of course always between 0 and 1, $C_\text{q}$ can take any positive value. Generally, Czjzek lineshapes are accurately calculated for $C_\text{q}^\text{max} = 4\sigma$, with $\sigma$ the Czjzek width. As $\sigma$ can change during the fitting, the choice for $C_\text{q}^\text{max}$ should be revisited after the fitting. If this value is unsuitable for the fit results, a new library must be generated and the fitting rerun.
+
+Additional issues can arise if multiple Czjzek sites are simulated. In this case, the total width of the 
+$C_\text{q}$ range must be wide enough to accommodate the larger of the two $\sigma$ values, while the step size must be small enough to accurately describe the distribution due to the small $\sigma$.
+
+In the following tutorial, we will generate the library and fit an experimental data set with both a regular Czjzek, as well as an Extended Czjzek distribution.
+
+
+\section{Data}
+The data used in this tutorial is a $^{35}$Cl spectrum of ball-milled MgCl$_2$ with a diisobutyl phthalate adduct. The spectrum was acquired on a 20 T magnet at a spinning speed of 15.625 kHz.
+
+
+\section{Fitting a Czjzek lineshape}
+
+%\begin{itemize}
+%  \item Use `Plot $\longrightarrow$ User x-axis' and fill in: array([2.408, 5.296, 8.186, 11.075, 13.963, 16.852, 19.741, 22.630,
+%25.520 , 28.409, 31.298, 34.187, 37.076, 39.965, 42.854 , 45.742])*0.535/100 
+%\item Set the Axis unit to `s'
+%\end{itemize}
+%Here, we make use of ssNake's calculation capability to multiply the array by some values. Note that
+%the axis still shows `Time D1 [s]', while actually it is a gradient strength (you need to remember
+%this for yourself!).
+
+
+\end{document}
