@@ -62,16 +62,15 @@
 \section{Introduction}
 This tutorial describes how to fit Czjzek and Extended Czjzek quadrupolar lineshapes in ssNake. As this is relatively advanced, it is recommended to study the tutorial on CSA fitting and the single fit part of MultiFitQuadrupole first.
 
-A Czjzek lineshape occurs in case where this is a atomic site in a material with considerable distortions around it. This standard Czjzek model assumes a site with in first instance no quadrupolar coupling ($C_\text{q}=0$) due to symmetry. However, the distortions in the material break the symmery and introduce a quadrupolar coupling.
+A Czjzek lineshape occurs in case where this is a atomic site in a material with considerable distortions around it. This standard Czjzek model assumes a site with in first instance no quadrupolar coupling ($C_\text{Q}=0$) due to symmetry. However, the distortions in the material break the symmery and introduce a quadrupolar coupling.
 
-Simulating a Czjzek lineshape is more involved, as it requires calculation of a whole series of quadrupolar powder patterns (the distortion is different for different positions in the material). Based on the parameters of the Czjzek distribution, the relative intensity of each of these powder patterns changes. To be able to calculate this efficiently in an iterative routine, ssNake pre-calculates the quadrupole powder patterns. In the fitting, the Czjzek parameters change, but this leads only to a different sum of the powder patterns. The collection of pre-calculated lineshapes is called the `library'.
+Simulating a Czjzek lineshape is a bit more involved than the other fitting routines, as it requires calculation of a whole series of quadrupolar powder patterns (the distortion is different for different positions in the material). Based on the parameters of the Czjzek distribution, the relative intensity of each of these powder patterns changes. To be able to calculate this efficiently in an iterative routine, ssNake pre-calculates the quadrupole powder patterns for a grid of $C_\text{Q}$ and $\eta$ values. To simulate a spectrum, a weighted sum is taken of the quadrupole powder patterns. In the fitting, the Czjzek parameters change, but this leads only to different weights in sum of the powder patterns. The collection of pre-calculated lineshapes is called the `library'.
 
-Generating this library can be done by ssNake itself, or supplied by the user from an external source. (In the ssNake paper, we used SIMPSON to calculate lineshape with excitation efficiencies include, for example.) It is in the generation of the library that settings regarding Magic Angle Spinning, inclusion of satellite intensities etc.\ are relevant.
+Generating this library can be done by ssNake itself, or supplied by the user from an external source. (In the ssNake paper, we used SIMPSON to calculate lineshape with excitation efficiencies included, for example.) It is in the generation of the library that settings regarding Magic Angle Spinning, inclusion of satellite intensities etc.\ are relevant.
 
-When generating the library, a grid with quadrupolar settings must be chosen: for $C_\text{q}$ and $\eta$. The smaller the steps that are taken, the more accurate the fitting, at the expense of speed. Note that while $\eta$ is of course always between 0 and 1, $C_\text{q}$ can take any positive value. Generally, Czjzek lineshapes are accurately calculated for $C_\text{q}^\text{max} = 4\sigma$, with $\sigma$ the Czjzek width. As $\sigma$ can change during the fitting, the choice for $C_\text{q}^\text{max}$ should be revisited after the fitting. If this value is unsuitable for the fit results, a new library must be generated and the fitting rerun.
+When generating the library, the grid of quadrupolar parameters ($C_\text{Q}$, $\eta$) must be chosen. The larger the grid size that is used, the more accurate the fitting, at the expense of speed. Note that while $\eta$ is of course always between 0 and 1, $C_\text{Q}$ can take any positive value. Generally, Czjzek lineshapes are accurately calculated for $C_\text{Q}^\text{max} = 4\sigma$, with $\sigma$ the Czjzek width. As $\sigma$ can change during the fitting, the choice for $C_\text{Q}^\text{max}$ should be revisited after the fitting. If this value is unsuitable for the fit results, a new library must be generated and the fitting rerun.
 
-Additional issues can arise if multiple Czjzek sites are simulated. In this case, the total width of the 
-$C_\text{q}$ range must be wide enough to accommodate the larger of the two $\sigma$ values, while the step size must be small enough to accurately describe the distribution due to the small $\sigma$.
+Additional issues can arise if multiple Czjzek sites in the same spectrum are simulated. In this case, the total width of the $C_\text{Q}$ range must be wide enough to accommodate the largest of the two $\sigma$ values, while the step size must be small enough to accurately describe the distribution of the site with the small $\sigma$ value.
 
 In the following tutorial, we will generate the library and fit an experimental data set with both a regular Czjzek, as well as an Extended Czjzek distribution.
 
@@ -98,13 +97,13 @@ Firstly, we must generate a library, as was explained above.
 \begin{itemize}
   \item Click the 'Library' button.
 \end{itemize}
-This show the following:
+This shows the following:
 \begin{center}
 \includegraphics[width=0.8\linewidth]{Figs/fig2.PNG}
 \end{center}
-Here, we can fill in the settings for our library, and generate it. The plot on the right can be used to view the Czjzek amplitude on the chosen $C_\text{Q}$-$\eta$ grid. For this, it use the largest $\sigma$-value that was put in the fitting window. This value is till at its default, so we have no clue about the grid size\ldots
+Here, we can fill in the settings for our library, and generate it. The plot on the right can be used to view a contour plot of the Czjzek weights (per site) on the chosen $C_\text{Q}$-$\eta$ grid. For this, it use the largest $\sigma$-value that was put in the fitting window. This value is still at its default, so we have no clue about the grid size\ldots
 
-Push the `Show' button on the right gives the Czjzek intensities for the current $\sigma$ value:
+Click the `Show' button on the right gives the Czjzek intensities for the current $\sigma$ value:
 \begin{center}
 \includegraphics[width=0.5\linewidth]{Figs/fig3.PNG}
 \end{center}
@@ -119,12 +118,12 @@ Now, to generate the library, we need a couple of experimental settings:
 \end{itemize}
 These are all the changes we need for now. Generate the library by pushing `Generate'. This can take some time. After this, close the window.
 
-Pushing `Sim' in the fitting window gives us the current simulated spectrum:
+Pushing `Sim' in the fitting window gives us the following simulated spectrum:
 \begin{center}
 \includegraphics[width=0.8\linewidth]{Figs/fig4.PNG}
 \end{center}
 
-The quadrupolar coupling in the experimental spectrum is a bit more than in the simulation, so we need to change that a bit. Also, the position is off:
+The quadrupolar coupling in the experimental spectrum is a bit larger than in the simulation, so we need to change that. Also, the position is off:
 \begin{itemize}
   \item Set `$\sigma$' to 2 MHz.
   \item Set `Pos' to 100 ppm.
@@ -134,13 +133,13 @@ This gives:
 \begin{center}
 \includegraphics[width=0.8\linewidth]{Figs/fig5.PNG}
 \end{center}
-This looks ok. In must fitting routines, we would now push `Fit' and be done. However, as we have double $\sigma$ the library might be wrong! We need twice the $C_\text{Q}$ range now.
+This looks ok. In most fitting routines, we would now push `Fit' and be done. However, as we have doubled the $\sigma$ the library might be wrong! We now need a $C_\text{Q}$ range which is twice as large.
 
 Open the Library window again, and push `Show' on the right. This shows:
 \begin{center}
 \includegraphics[width=0.5\linewidth]{Figs/fig6.PNG}
 \end{center}
-Not good! To fix this, we need a wider range:
+The distribution is now cut off in the $C_\text{Q}$ dimension. To fix this, we need a wider range:
 \begin{itemize}
   \item Set the $C_\text{Q}$ limit maximum to 10 MHz.
 \end{itemize}
@@ -149,7 +148,7 @@ This leads to (after `Show'):
 \begin{center}
 \includegraphics[width=0.5\linewidth]{Figs/fig7.PNG}
 \end{center}
-Much better! I put the range a bit more than just times 2, to be able to accommodate a large $\sigma$ if this happens during the fit.
+Much better! I put the range a bit more than just times 2, to be able to accommodate larger $\sigma$ in case this happens during fitting.
 \begin{itemize}
   \item Push `Generate' to generate the new library.
   \item Close the window.
@@ -165,16 +164,16 @@ This gives:
 \begin{center}
 \includegraphics[width=0.8\linewidth]{Figs/fig8.PNG}
 \end{center}
-Which is much better than the regular quadrupolar fit shown above. However, the result is not that great. The sidebands for example are much `sharper' in the experimental spectrum\ldots The reason why this is, is because the underlying quadrupolar pattern has a $C_\text{Q}$ value of its own.
+Which is much better than the regular quadrupolar fit shown above. However, the result is not that great. The sidebands for example are much `sharper' in the experimental spectrum\ldots The reason is that the regular Czjzek model assumes distortions in an otherwise symmetric surrounding ($C_\text{Q}=0$). In this case, the `undisturbed' surrounding is already asymmetric. We therefor require the extended Czjzek model. 
 \begin{itemize}
   \item Change the `Type' to Extended.
 \end{itemize}
-This actives two new parameters. $C_\text{Q}^0$ and $\eta^0$. Put these at 4 MHz and 0, respectively. (These parameters relate to the undisturbed value of the material. As the data was recorded on a compound based on MgCl$_2$, the values of pure MgCl$_2$ are a good place to start. Based on this structure we also choose $\eta^0=0$.) Also, untick the box at $C_\text{Q}^0$ to let the fitting optimize it.
+This actives two new parameters. $C_\text{Q}^0$ and $\eta^0$. Put these at 4 MHz and 0, respectively. (These are the quadrupole parameters of the undisturbed surroundings of the sites. As the data was recorded on a compound based on MgCl$_2$, the values of pure MgCl$_2$ are a good place to start. Based on this structure we also choose $\eta^0=0$.) Also, untick the box at $C_\text{Q}^0$ to let the fitting optimize it.
 \begin{itemize}
   \item Set Lorentz back to 100, and Gauss back to 1000.
   \item Push `Sim'. This will take some time.
 \end{itemize}
-Noticed how long that took? This is because the calculation of the Extended Czjzek distribution is very involved (it requires integration over three angles). We have $\eta^0=0$, which means ssNake is actually using its fast routine! It can be even slower.
+Noticed how long that took? This is because the calculation of the Extended Czjzek distribution is quite involved. We have used $\eta^0=0$, which means ssNake is actually using an efficient routine! For $\eta^0\neq0$ it will be even slower.
 
 The spectrum we get looks like:
 \begin{center}
@@ -193,12 +192,12 @@ A quick check of the Library shows that we are still in a good regime for the si
 \begin{center}
 \includegraphics[width=0.5\linewidth]{Figs/fig11.PNG}
 \end{center}
-(Notice the different shape of the contours: this is due to the Extended changes.)
+(Notice the different shape of the contours: this is due to the Extended Czjzek model.)
 
-This means that we can fit!
+This means that we can start fitting!
 \begin{itemize}
   \item Push `Fit'.
-  \item Grab a cup of coffee: this will take some time. The underlying routine is multithreaded, meaning that all your CPU cores will be used. If you have the `numba' python library installed, the calculations will be a lot faster. (This is bundled in the ssNake installer.)
+  \item Grab a cup of coffee: this will take some time. The underlying routine is multithreaded, meaning that all your CPU cores will be used. If you have the `numba' python library installed, the calculations will be a lot faster. (For Windows this is bundled in the ssNake installer.)
 \end{itemize}
 After some time we get:
 \begin{center}
@@ -206,7 +205,7 @@ After some time we get:
 \end{center}
 which is a quite good fit. Definitely much better than the quadrupolar or normal Czjzek fit. The fit result can also be found in the data directory of this tutorial.
 
-As a nice trick, we can also disable the extended Czjzek addition, and simulate again. This leads to (after lowring the integral a bit):
+As a nice trick, we can also return to the regular Czjzek model, and simulate again. This leads to (after lowering the integral a bit):
 \begin{center}
 \includegraphics[width=0.8\linewidth]{Figs/fig13.PNG}
 \end{center}
