@@ -1,0 +1,16 @@
+##TITLE= Parameter file, TOPSPIN		Version 3.1
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 2	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= solidnmr
+$$ 2013-03-28 19:49:40.514 +0100  solidnmr@rmn800av.univ-lille1.fr
+$$ /opt/data_800AVIII/data/solidnmr/nmr/800.JT-130328/2/pdata/1/outd
+$$ process /opt/topspin3.1/prog/mod/t1
+##$CURPLOT= <hplj-printer->
+##$CURPRIN= <$hplj-printer->
+##$DFORMAT= <normdp>
+##$LAYOUT= <~/Documents/1DJT.xwp>
+##$LFORMAT= <normlp>
+##$PFORMAT= <normpl>
+##END=

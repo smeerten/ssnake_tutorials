@@ -1,0 +1,18 @@
+##TITLE= Audit trail, TOPSPIN		Version 3.1
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= solidnmr
+$$ /opt/data_800AVIII/data/solidnmr/nmr/800.JT-130328/2/audita.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2013-03-28 20:38:23.851 +0100>,<solidnmr>,<rmn800av.univ-lille1.fr>,<go>,<TOPSPIN 3.1>,
+      <created by zg
+	started at 2013-03-28 19:38:40.401 +0100,
+	POWCHK enabled, PULCHK disabled,
+       configuration hash MD5:
+       27 F9 09 89 50 1B EA 0E C4 58 FC 54 30 3F 47 64
+       data hash MD5: 1500 * 100
+       AB 89 9E 8A E4 F1 B4 9D 4A 67 74 A1 C2 B2 8F D2>)
+##END=
+
+$$ hash MD5
+$$ B1 FF FA E7 95 1A C5 75 F1 8B 7D F8 41 69 B5 BA
