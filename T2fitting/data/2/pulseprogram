@@ -1,0 +1,117 @@
+# 1 "/opt/pulse_programs/ppsolide/halfecho.jt"
+;halfecho.jt
+;checked AVIII+topspin 3.0
+
+; Hahn-Echo experiment
+; to be used in MAS experiments, echo delay is set to be an integer number
+; of rotor periods
+; acquisition starts on top of echo
+; for static experiments enter cnst31 = 1e6 and set l1 to desired echo delay in us
+; this pulse program can be used to determine 90 and 180 degree selective pulses
+; used in MQMAS experiments (mp3q...)
+; CAUTION : p3 and p4 are used for subsequent use in MQMAS experiments
+; modified 30/01/2006 : added hardEcho ZGOPTN for extra phase cycling for hard pulses echo
+; modified 07/10/2010 : code cleanning, code check for ZGOPTNS on AVIII topspin 3.0
+
+;ZGOPTNS : -DPRESAT -Dhardecho -DdecF2echo -DdecF2aq -DT1 -Dp3opt _HS
+; PRESAT to use presaturation before echo
+; hardEcho to use 64 phases cycling (+1-> -1 pathway)
+; decF2echo add F2 decoupling during echo delays (d6,d7)
+; decF2aq add F2 decoupling during acquisition
+; T1 use a vd list for T1 measurement using an echo sequence (defines PRESAT automatically)
+; p3opt disable p4=cnst0*p3 relation : allow p3,p4 independant optimisation
+; _HS : add HyperSecant/DFS pre pulse to enhance CT signal of quadrupolar spins.
+# 24 "/opt/pulse_programs/ppsolide/halfecho.jt"
+;ns : 16 * n (or 64 if -DhardEcho)
+;d1 : recycle delay
+;d6 : echo delay (calculated)
+;pl1 : =119 dB, not used
+;pl21 : RF power level
+;p3 : 90 degree pulse
+;p4 : 180 degree pulse
+;cnst31 : =MAS spin rate (or =1e6 for static)
+;cnst0 factor for second pulse
+;l1 : # of rotor cycles (or tau in us)
+;l2 : JRES # rotor cycles step
+;ns : 16*n
+
+;$COMMENT=hahn echo with useful features
+;$CLASS=Solids
+;$DIM=1D-2D
+;$TYPE=
+;$SUBTYPE=
+;$OWNER=Trebosc
+
+# 91 "/opt/pulse_programs/ppsolide/halfecho.jt"
+# 92 "/opt/pulse_programs/ppsolide/halfecho.jt"
+
+
+"l5=0"
+# 97 "/opt/pulse_programs/ppsolide/halfecho.jt"
+"p4=p3*cnst0"
+
+
+"d6=((1s*(l1+l2*l5))/cnst31)-(p3/2)-(p4/2)"
+"d7=((1s*(l1+l2*l5))/cnst31)-(p4/2)-de-1.0u"
+# 103 "/opt/pulse_programs/ppsolide/halfecho.jt"
+"d0=d6"
+;"inf1=2s*l2/cnst31"
+
+
+# 1 "mc_line 107 file /opt/pulse_programs/ppsolide/halfecho.jt exp. def. part of mc cmd. before ze"
+define delay MCWRK
+define delay MCREST
+"MCWRK = 0.500000*30m"
+"MCREST = 30m - 30m"
+
+    dccorr
+# 107 "/opt/pulse_programs/ppsolide/halfecho.jt"
+1 ze
+# 1 "mc_line 107 file /opt/pulse_programs/ppsolide/halfecho.jt exp. def. of mc cmd. after ze"
+# 108 "/opt/pulse_programs/ppsolide/halfecho.jt"
+# 1 "mc_line 108 file /opt/pulse_programs/ppsolide/halfecho.jt exp. start label for mc cmd."
+2 MCWRK 
+LBLF1, MCWRK
+  MCREST
+# 109 "/opt/pulse_programs/ppsolide/halfecho.jt"
+# 110 "/opt/pulse_programs/ppsolide/halfecho.jt"
+"d6=((1s*(l1+l2*l5))/cnst31)-(p3/2)-(p4/2)"
+"d7=((1s*(l1+l2*l5))/cnst31)-(p4/2)-de-1.0u"
+
+
+# 117 "/opt/pulse_programs/ppsolide/halfecho.jt"
+ 
+
+
+# 122 "/opt/pulse_programs/ppsolide/halfecho.jt"
+  d1
+
+
+# 129 "/opt/pulse_programs/ppsolide/halfecho.jt"
+  10u pl21:f1
+;1u fq=cnst10:f1
+  (p3 ph1):f1
+  d6 
+  (p4 ph2):f1
+  d7
+;1u fq=0:f1
+  1u 
+  go=2 ph31 
+  10u 
+
+
+# 1 "mc_line 142 file /opt/pulse_programs/ppsolide/halfecho.jt exp. mc cmd. in line"
+  MCWRK  wr #0 if #0 zd iu5 
+  lo to LBLF1 times td1
+  MCWRK
+# 143 "/opt/pulse_programs/ppsolide/halfecho.jt"
+# 145 "/opt/pulse_programs/ppsolide/halfecho.jt"
+exit
+
+ph0=0
+ph30=0
+ ; defines ph20 and ph19=0
+
+ph1=0 1 2 3
+ph2=0 0 0 0 1 1 1 1 2 2 2 2 3 3 3 3
+ph31=0 3 2 1 2 1 0 3

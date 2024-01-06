@@ -1,0 +1,35 @@
+##TITLE= Audit trail, TOPSPIN		Version 3.1
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= solidnmr
+$$ /opt/data_800AVIII/data/solidnmr/nmr/800.JT-130328/2/pdata/1/auditp.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2013-03-28 20:38:23.851 +0100>,<solidnmr>,<rmn800av.univ-lille1.fr>,<go>,<TOPSPIN 3.1>,
+      <created by zg
+	started at 2013-03-28 19:38:40.401 +0100,
+	POWCHK enabled, PULCHK disabled,
+       configuration hash MD5:
+       27 F9 09 89 50 1B EA 0E C4 58 FC 54 30 3F 47 64
+       data hash MD5: 1500 * 100
+       AB 89 9E 8A E4 F1 B4 9D 4A 67 74 A1 C2 B2 8F D2>)
+(   2,<2013-03-29 11:15:14.050 +0100>,<solidnmr>,<rmn800av.univ-lille1.fr>,<proc2d>,<TOPSPIN 3.1>,
+      <Start of raw data processing
+       xf2 F2: SI = 4K WDW = 1 LB = 250 FT_mod = 6 PKNL = 1 PHC0 = -159.6 PHC1 = 0 F1: SI = 128
+       data hash MD5: 4K * 128
+       A4 F4 9E A7 9B BA 7D 79 2F 54 8D 76 9B 14 30 A0>)
+(   3,<2013-03-29 16:07:03.091 +0100>,<solidnmr>,<rmn800av.univ-lille1.fr>,<audit>,<TOPSPIN 3.1>,
+      <user comment:
+       TITLE=27Al Al2O3 JF3 échangé 1801C 17O
+       HXY 3.2mm H13539/0007TITLE_END
+       data hash MD5: 4K * 128
+       A4 F4 9E A7 9B BA 7D 79 2F 54 8D 76 9B 14 30 A0>)
+$$ /home/trebosc/NMR/data/RMN800AVIII/nmr/800.JT-130328/2/pdata/1/auditp.txt
+(   4,<2023-10-05T11:04:32.453+0200>,<trebosc>,<trebosc-Latitude-7390>,<proc2d>,<TopSpin 4.3.0>,
+      <Start of raw data processing
+       xf2 F2: SI = 4K WDW = 1 LB = 250 FT_mod = 6 PKNL = 1 PHC0 = -159.6 PHC1 = 0 F1: SI = 128
+       data hash MD5: 4K * 128
+       AD 88 24 FF A6 70 B3 A8 83 A8 EE 70 A0 7C BF CB>)
+##END=
+
+$$ hash MD5
+$$ 81 AA A7 4F B1 21 0F 93 22 AC C3 A4 F5 4D D7 58
